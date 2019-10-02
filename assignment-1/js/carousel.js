@@ -35,7 +35,7 @@ var rightArrow = createButton();
 rightArrow.style.background = "url(./images/right-arrow.png) no-repeat";
 rightArrow.style.right = 0;
 
-// On click left arrow
+// On click right arrow
 rightArrow.onclick = function() {
   var rightOffset = 552;
 
@@ -48,7 +48,7 @@ rightArrow.onclick = function() {
   }
 };
 
-// On click right arrow
+// On click left arrow
 leftArrow.onclick = function() {
   var leftOffset = 552;
 
@@ -56,7 +56,7 @@ leftArrow.onclick = function() {
     animateWrapper(-1, 552 * (images.length - 1));
     currentImageIndex = images.length - 1;
   } else {
-    animateWrapper(-1, leftOffset);
+    animateWrapper(1, leftOffset);
     currentImageIndex--;
   }
 };
