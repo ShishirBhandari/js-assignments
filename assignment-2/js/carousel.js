@@ -161,9 +161,23 @@ function Carousel(carouselContainer, animationTime, holdTime) {
     arrow.element.onclick = function() {
       var direction = arrow.isLeft ? 1 : -1;
 
-      this.currentImageIndex -= direction;
+      // this.currentImageIndex -= direction;
 
-      this.animateWrapper(direction, IMAGE_SIZE);
+      var imagesCount = this.wrapper.children.length;
+      if (!arrow.isLeft && this.currentImageIndex >= imagesCount - 1) {
+        this.animateWrapper(1, IMAGE_SIZE * (imagesCount - 1));
+        this.currentImageIndex = 0;
+      } else if (arrow.isLeft && this.currentImageIndex <= 0) {
+        this.animateWrapper(-1, IMAGE_SIZE * (imagesCount - 1));
+        this.currentImageIndex = imagesCount - 1;
+      } else {
+        this.currentImageIndex -= direction;
+        this.animateWrapper(direction, IMAGE_SIZE);
+      }
+
+      console.log(this.currentImageIndex);
+
+      // this.animateWrapper(direction, IMAGE_SIZE);
     }.bind(this);
   };
 
