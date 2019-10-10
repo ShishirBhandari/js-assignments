@@ -37,7 +37,9 @@ class Circle {
   }
 
   setDirections() {
-    this.direction = { x: randomNumber(-1, 2), y: randomNumber(-1, 2) };
+    do {
+      this.direction = { x: randomNumber(-1, 2), y: randomNumber(-1, 2) };
+    } while (this.direction.x == 0 && this.direction.y == 0);
   }
 
   create() {
