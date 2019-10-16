@@ -78,7 +78,7 @@ class EnemyCar extends Car {
     this.positionY = 100;
     this.carImage.setAttribute('src', './images/RedCar.png');
 
-    this.carImage.style.transform = 'scaleY(-1)';
+    // this.carImage.style.transform = 'scaleY(-1)';
     // this.setLanes();
     this.draw();
   }

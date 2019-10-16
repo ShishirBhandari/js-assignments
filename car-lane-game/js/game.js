@@ -1,6 +1,6 @@
 var GAME_ASPECT_RATIO = 1 / 1.5;
 var GAME_WIDTH = 350;
-var FPS = 30;
+var FPS = 60;
 
 var CARS_INTERVAL = 1000;
 
@@ -17,8 +17,8 @@ class Game {
     this.createPlayer();
     this.createEnemies();
 
-    this.moveEnemies();
     this.playerControl();
+    this.gameLoop();
   }
 
   setStyles() {
@@ -39,7 +39,7 @@ class Game {
   createEnemies() {
     this.enemies = [];
 
-    var createEnemies = setInterval(
+    this.createEnemiesInterval = setInterval(
       function() {
         var car = new EnemyCar(this.element);
 
@@ -47,8 +47,6 @@ class Game {
       }.bind(this),
       CARS_INTERVAL
     );
-
-    this.intervals.push(createEnemies);
   }
 
   playerControl() {
@@ -63,79 +61,69 @@ class Game {
 
       this.player.draw();
     }.bind(this);
+  }
 
-    var playerControl = setInterval(
+  gameLoop() {
+    this.gameLoopInterval = setInterval(
       function() {
-        if (this.gameOver) {
-          for (let i = 0; i < this.intervals.length; i++) {
-            const element = this.intervals[i];
-
-            clearInterval(element);
-            clearInterval(this.background.moveInterval);
-          }
-
-          if (
-            this.background.currentScore > localStorage.getItem('high_score')
-          ) {
-            localStorage.setItem('high_score', this.background.currentScore);
-          }
-
-          setTimeout('location.reload(true);', 1000);
-          // location.reload(true);
-        }
+        this.moveEnemies();
+        this.background.move();
+        this.afterGameOver();
       }.bind(this),
       1000 / FPS
     );
+  }
 
-    this.intervals.push(playerControl);
+  afterGameOver() {
+    if (this.gameOver) {
+      clearInterval(this.gameLoopInterval);
+      clearInterval(this.createEnemiesInterval);
+      clearInterval(this.background.moveInterval);
+
+      if (this.background.currentScore > localStorage.getItem('high_score')) {
+        localStorage.setItem('high_score', this.background.currentScore);
+      }
+
+      setTimeout('location.reload(true);', 1000);
+      // location.reload(true);
+    }
   }
 
   moveEnemies() {
-    var moveEnemies = setInterval(
-      function() {
-        for (let i = 0; i < this.enemies.length; i++) {
-          const enemy = this.enemies[i];
-          enemy.moveDown();
-          enemy.detectObstacle(this.enemies);
-          enemy.draw();
+    // move enemies
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
+      enemy.moveDown();
+      enemy.detectObstacle(this.enemies);
+      enemy.draw();
 
-          if (enemy.outOfTheGame()) {
-            enemy.element.style.display = 'none';
-            this.element.removeChild(enemy.element);
-            this.enemies.splice(i, 1);
-            this.background.increaseScore(1);
-            break;
-          }
-        }
-      }.bind(this),
-      1000 / FPS
-    );
+      if (enemy.outOfTheGame()) {
+        enemy.element.style.display = 'none';
+        this.element.removeChild(enemy.element);
+        this.enemies.splice(i, 1);
+        this.background.increaseScore(1);
+        break;
+      }
+    }
 
-    this.intervals.push(moveEnemies);
+    // check game Over
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
 
-    var checkGameOver = setInterval(
-      function() {
-        for (let i = 0; i < this.enemies.length; i++) {
-          const enemy = this.enemies[i];
-
-          if (
-            enemy.positionX == this.player.positionX &&
-            enemy.positionY <=
-              this.player.positionY +
-                (100 * this.player.height) / (GAME_WIDTH / GAME_ASPECT_RATIO) &&
-            enemy.positionY + enemy.heightPercent >= this.player.positionY
-          ) {
-            this.gameOver = true;
-          }
-        }
-      }.bind(this),
-      1000 / FPS
-    );
-
-    this.intervals.push(checkGameOver);
+      if (
+        enemy.positionX == this.player.positionX &&
+        enemy.positionY <=
+          this.player.positionY +
+            (100 * this.player.height) / (GAME_WIDTH / GAME_ASPECT_RATIO) &&
+        enemy.positionY + enemy.heightPercent >= this.player.positionY
+      ) {
+        this.gameOver = true;
+      }
+    }
   }
 }
 
+// Main Game
 function mainGame() {
   var mainWrapper = document.querySelector('.main-wrapper');
 
@@ -157,7 +145,6 @@ function mainGame() {
     playButton.style.display = 'none';
 
     var game = new Game(mainWrapper);
-    console.log(game);
   };
 }
 

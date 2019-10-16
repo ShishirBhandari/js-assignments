@@ -1,5 +1,5 @@
+var BG_SPEED = 2; // 2, 5
 var FPS = 60;
-var BG_SPEED = 3; // 2, 5
 
 class Background {
   constructor(parentElem) {
@@ -9,6 +9,7 @@ class Background {
     this.scoreBox = document.createElement('span');
     this.ammoBox = document.createElement('span');
     this.currentScore = 0;
+    this.currentBgPos = 0;
 
     this.setStyles();
     this.move();
@@ -43,14 +44,9 @@ class Background {
   }
 
   move() {
-    var currentBgPos = 0;
-    this.moveInterval = setInterval(
-      function() {
-        this.element.style.backgroundPositionY =
-          (currentBgPos += (BG_SPEED * FPS) / 30) + 'px';
-      }.bind(this),
-      1000 / FPS
-    );
+    this.element.style.backgroundPositionY =
+      // (this.currentBgPos += (BG_SPEED * FPS) / 30) + 'px';
+      (this.currentBgPos += BG_SPEED) + '%';
   }
 
   increaseScore(score) {
