@@ -10,7 +10,7 @@ class Obstacle {
 
     this.width = 52;
     this.height = 320;
-    this.gap = 85;
+    this.gap = 100;
 
     this.minYPos = -100;
     this.speed = 2;
@@ -89,10 +89,19 @@ class Obstacle {
       }
 
       p.x -= this.speed;
+    }
+  }
+
+  obstacleCrossed(birdXPos) {
+    for (let i = 0; i < this.position.length; i++) {
+      const p = this.position[i];
 
       if (p.x + this.width <= 0) {
         this.position.shift();
+        return true;
       }
     }
+
+    return false;
   }
 }

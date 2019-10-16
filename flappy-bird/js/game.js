@@ -40,6 +40,7 @@ class Game {
     this.bird = new Bird(this.context);
 
     this.obstacles = new Obstacle(this.context);
+    this.gameOver = new GameOver(this.context);
   }
 
   checkInputs() {
@@ -114,6 +115,9 @@ class Game {
         this.bird.useGravity(this.gravity);
         this.bird.draw();
 
+        this.showScore();
+        this.gameOver.showHighScore(this.gameWidth);
+
         break;
     }
 
@@ -122,11 +126,17 @@ class Game {
 
   checkCollision() {
     if (this.foreground.detectCollision(this.bird, this.gameHeight)) {
+      this.gameOver.setHighScore(this.currentScore);
       this.state = 'GameOver';
     }
 
     if (this.obstacles.update(this.bird, this.gameWidth)) {
+      this.gameOver.setHighScore(this.currentScore);
       this.state = 'GameOver';
+    }
+
+    if (this.obstacles.obstacleCrossed(this.bird.posX)) {
+      this.currentScore++;
     }
   }
 
@@ -137,7 +147,7 @@ class Game {
     this.context.fillText(
       this.currentScore,
       this.gameWidth / 2 - scoreFontSize / 2,
-      100
+      75
     );
   }
 }
