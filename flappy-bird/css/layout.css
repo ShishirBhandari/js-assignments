@@ -1,0 +1,15 @@
+body {
+  text-align: center;
+  background-color: darkslategrey;
+}
+
+.main-wrapper {
+  display: inline-block;
+  text-align: center;
+  background-color: darkslategrey;
+}
+
+p {
+  text-align: center;
+  color: white;
+}

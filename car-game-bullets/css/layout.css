@@ -1,4 +1,12 @@
+body {
+  background-color: black;
+}
+
+p {
+  color: white;
+}
+
 .main-wrapper {
   text-align: center;
-  background: white;
+  background: black;
 }
