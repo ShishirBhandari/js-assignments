@@ -8,8 +8,8 @@ var MAX_RAD = 20;
 var MAX_HEIGHT = 500;
 var MAX_WIDTH = 700;
 var FPS = 30;
-var ANTS_SPEED = 0.5;
-var ANTS_COUNT = 20;
+var ANTS_SPEED = 1;
+var ANTS_COUNT = 50;
 
 function randomNumber(min, max) {
   min = Math.ceil(min);
