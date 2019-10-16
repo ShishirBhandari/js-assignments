@@ -115,6 +115,7 @@ class EnemyCar extends Car {
     }
   }
 
+  // not used
   detectCollision(cars) {
     for (let i = 0; i < cars.length; i++) {
       const c = cars[i];
@@ -127,7 +128,7 @@ class EnemyCar extends Car {
           // this.positionX + this.width >= c.positionX &&
           // this.positionX <= c.positionX + c.width
         ) {
-          console.log('detected');
+          // console.log('detected');
           break;
         }
       }

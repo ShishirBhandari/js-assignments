@@ -78,7 +78,7 @@ class Game {
     if (this.gameOver) {
       clearInterval(this.gameLoopInterval);
       clearInterval(this.createEnemiesInterval);
-      clearInterval(this.background.moveInterval);
+      // clearInterval(this.background.moveInterval);
 
       if (this.background.currentScore > localStorage.getItem('high_score')) {
         localStorage.setItem('high_score', this.background.currentScore);

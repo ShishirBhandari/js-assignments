@@ -1,6 +1,6 @@
 var GAME_ASPECT_RATIO = 1 / 1.5;
 var GAME_WIDTH = 350;
-var FPS = 30;
+var FPS = 60;
 
 var CARS_INTERVAL = 1000;
 var BULLET_FIRE_RATE = 300;
@@ -12,19 +12,18 @@ class Game {
     this.background = new Background(this.element);
 
     this.gameOver = false;
-    this.intervals = [];
 
     this.setStyles();
     this.createPlayer();
     this.createEnemies();
+    this.createBullets();
 
-    this.moveEnemies();
     this.playerControl();
 
     this.ammo = 10;
     this.isFireAllowed = true;
     this.bulletsList = [];
-    this.checkBulletHit();
+    this.gameLoop();
   }
 
   setStyles() {
@@ -45,7 +44,7 @@ class Game {
   createEnemies() {
     this.enemies = [];
 
-    var createEnemies = setInterval(
+    this.createEnemiesInterval = setInterval(
       function() {
         var car = new EnemyCar(this.element);
 
@@ -53,8 +52,16 @@ class Game {
       }.bind(this),
       CARS_INTERVAL
     );
+  }
 
-    this.intervals.push(createEnemies);
+  createBullets() {
+    this.createBulletsInterval = setInterval(
+      function() {
+        if (this.ammo <= 0) this.ammo += 5;
+        else this.ammo += 1;
+      }.bind(this),
+      10000
+    );
   }
 
   playerControl() {
@@ -99,75 +106,64 @@ class Game {
         }
       }
     }.bind(this);
+  }
 
-    var playerControl = setInterval(
+  gameLoop() {
+    this.gameLoopInterval = setInterval(
       function() {
-        if (this.gameOver) {
-          for (let i = 0; i < this.intervals.length; i++) {
-            const element = this.intervals[i];
-
-            clearInterval(element);
-            clearInterval(this.background.moveInterval);
-          }
-          setTimeout('location.reload(true);', 1000);
-          //   location.reload(true);
-
-          if (
-            this.background.currentScore > localStorage.getItem('high_score')
-          ) {
-            localStorage.setItem('high_score', this.background.currentScore);
-          }
-        }
+        this.background.move();
+        this.moveEnemies();
+        this.checkBulletHit();
+        if (this.gameOver) this.afterGameOver();
       }.bind(this),
       1000 / FPS
     );
+  }
 
-    this.intervals.push(playerControl);
+  afterGameOver() {
+    clearInterval(this.gameLoopInterval);
+    clearInterval(this.createEnemiesInterval);
+    clearInterval(this.createBulletsInterval);
+
+    setTimeout('location.reload(true);', 1000);
+    //   location.reload(true);
+
+    if (
+      this.background.currentScore > localStorage.getItem('high_score_bullets')
+    ) {
+      localStorage.setItem('high_score_bullets', this.background.currentScore);
+    }
   }
 
   moveEnemies() {
-    var moveEnemies = setInterval(
-      function() {
-        for (let i = 0; i < this.enemies.length; i++) {
-          const enemy = this.enemies[i];
-          enemy.moveDown();
-          enemy.detectObstacle(this.enemies);
-          enemy.draw();
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
+      enemy.moveDown();
+      enemy.detectObstacle(this.enemies);
+      enemy.draw();
 
-          if (enemy.outOfTheGame()) {
-            enemy.element.style.display = 'none';
-            this.element.removeChild(enemy.element);
-            this.enemies.splice(i, 1);
-            this.background.increaseScore(1);
-            break;
-          }
-        }
-      }.bind(this),
-      1000 / FPS
-    );
+      if (enemy.outOfTheGame()) {
+        enemy.element.style.display = 'none';
+        this.element.removeChild(enemy.element);
+        this.enemies.splice(i, 1);
+        this.background.increaseScore(1);
+        break;
+      }
+    }
 
-    this.intervals.push(moveEnemies);
+    for (let i = 0; i < this.enemies.length; i++) {
+      const enemy = this.enemies[i];
 
-    var checkGameOver = setInterval(
-      function() {
-        for (let i = 0; i < this.enemies.length; i++) {
-          const enemy = this.enemies[i];
-
-          if (
-            enemy.positionX == this.player.positionX &&
-            enemy.positionY <=
-              this.player.positionY +
-                (100 * this.player.height) / (GAME_WIDTH / GAME_ASPECT_RATIO) &&
-            enemy.positionY + enemy.heightPercent >= this.player.positionY
-          ) {
-            this.gameOver = true;
-          }
-        }
-      }.bind(this),
-      1000 / FPS
-    );
-
-    this.intervals.push(checkGameOver);
+      if (
+        enemy.positionX == this.player.positionX &&
+        enemy.positionY <=
+          this.player.positionY +
+            (100 * this.player.height) / (GAME_WIDTH / GAME_ASPECT_RATIO) &&
+        enemy.positionY + enemy.heightPercent >= this.player.positionY
+      ) {
+        this.gameOver = true;
+      }
+    }
   }
 
   fireBullet() {
@@ -179,32 +175,29 @@ class Game {
     this.bulletsList.push(blt);
 
     this.ammo -= 1;
-    if (this.ammo <= 0) this.ammo = 0;
+    if (this.ammo <= 0) {
+      this.ammo = 0;
+    }
   }
 
   checkBulletHit() {
-    var bulletHitInterval = setInterval(
-      function() {
-        for (let i = 0; i < this.bulletsList.length; i++) {
-          const blt = this.bulletsList[i];
+    for (let i = 0; i < this.bulletsList.length; i++) {
+      const blt = this.bulletsList[i];
 
-          if (blt.posY >= 100) {
-            this.element.removeChild(blt.element);
-            this.bulletsList.splice(i, 1);
-            break;
-          }
+      if (blt.posY >= 100) {
+        this.element.removeChild(blt.element);
+        this.bulletsList.splice(i, 1);
+        break;
+      }
 
-          var isHit = blt.detectHit(
-            this.enemies,
-            this.bulletsList,
-            this.background
-          );
-          if (isHit) this.ammo++;
-        }
-        this.background.setAmmo(this.ammo);
-      }.bind(this),
-      1000 / FPS
-    );
+      var isHit = blt.detectHit(
+        this.enemies,
+        this.bulletsList,
+        this.background
+      );
+      if (isHit) this.ammo++;
+    }
+    this.background.setAmmo(this.ammo);
   }
 }
 
@@ -215,7 +208,9 @@ function mainGame() {
   highScore.style.color = '#aa0';
   highScore.style.display = 'block';
 
-  var highScoreText = (hc = localStorage.getItem('high_score')) ? hc : 0;
+  var highScoreText = (hc = localStorage.getItem('high_score_bullets'))
+    ? hc
+    : 0;
   highScore.innerHTML = 'High Score: ' + highScoreText;
 
   mainWrapper.appendChild(highScore);
@@ -229,7 +224,6 @@ function mainGame() {
     playButton.style.display = 'none';
 
     var game = new Game(mainWrapper);
-    console.log(game);
   };
 }
 
