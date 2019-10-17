@@ -7,11 +7,12 @@ class Game {
     this.gameHeight = 512;
 
     this.canvas = document.createElement('canvas');
-    this.canvas.setAttribute('id', 'canvas-with-' + controlKey);
+    this.canvas.setAttribute('id', 'canvas-with-' + this.controlKey);
     this.context = this.canvas.getContext('2d');
 
     this.gravity = 9.81;
 
+    this.checkInputs();
     this.reset();
 
     this.draw();
@@ -23,9 +24,8 @@ class Game {
     this.currentScore = 0;
 
     this.setStyles();
-    this.createComponents();
 
-    this.checkInputs();
+    this.createComponents();
     this.isSpacePressed = false;
   }
 
@@ -61,26 +61,29 @@ class Game {
       }
     }.bind(this);
 
-    document.onkeydown = function(event) {
-      var pressedKey = event.key;
+    window.addEventListener(
+      'keydown',
+      function(event) {
+        var pressedKey = event.key;
 
-      if (pressedKey == this.controlKey) {
-        event.preventDefault();
+        if (pressedKey == this.controlKey) {
+          event.preventDefault();
 
-        if (this.state == 'MainMenu') {
-          this.state = 'Playing';
-          this.bird.moveUp();
-        } else if (this.state == 'Playing') {
-          this.isSpacePressed = true;
+          if (this.state == 'MainMenu') {
+            this.state = 'Playing';
+            this.bird.moveUp();
+          } else if (this.state == 'Playing') {
+            this.isSpacePressed = true;
+          }
+          if (this.state == 'GameOver') {
+            this.state = 'MainMenu';
+            this.reset();
+          }
+        } else {
+          this.isSpacePressed = false;
         }
-        if (this.state == 'GameOver') {
-          this.state = 'MainMenu';
-          this.reset();
-        }
-      } else {
-        this.isSpacePressed = false;
-      }
-    }.bind(this);
+      }.bind(this)
+    );
   }
 
   draw() {
@@ -174,5 +177,3 @@ class Game {
     );
   }
 }
-
-
