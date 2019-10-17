@@ -1,7 +1,6 @@
 class Game {
-  constructor(parentElem, controlKey) {
+  constructor(parentElem) {
     this.parentElem = parentElem;
-    this.controlKey = controlKey;
 
     this.gameWidth = 288;
     this.gameHeight = 512;
@@ -12,7 +11,6 @@ class Game {
 
     this.gravity = 9.81;
 
-    this.checkInputs();
     this.reset();
 
     this.draw();
@@ -20,6 +18,8 @@ class Game {
 
   reset() {
     this.state = 'MainMenu';
+
+    this.checkInputs();
 
     this.currentScore = 0;
 
@@ -66,7 +66,7 @@ class Game {
       function(event) {
         var pressedKey = event.key;
 
-        if (pressedKey == this.controlKey) {
+        if (pressedKey == ' ') {
           event.preventDefault();
 
           if (this.state == 'MainMenu') {
