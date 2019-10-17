@@ -11,7 +11,7 @@ class Circle {
 
     this.currentX = 0;
     this.currentY = 100;
-    this.color = '#0aa';
+    this.color = '#aa0';
 
     this.phase = isOutOfPhase ? Math.PI : 0;
     this.speed = 2;
@@ -39,17 +39,23 @@ class Circle {
         Math.cos((this.speed * this.currentX * Math.PI) / 180 + this.phase) +
       this.radiusAmp / 2;
 
-    // this.frames++;
+    this.frames++;
 
     // if (this.frames % 10 == 0) {
-    //   var colorR = this.posY;
-    //   Math.colorR = Math.trunc(colorR.toString(16));
+    //   var colorR = this.posY / 2;
 
-    //   //   this.color = '#' + colorR + 'a0';
+    //   if (colorR > 255) colorR = 255;
 
-    //   //   "#f0f"
+    //   colorR = this.toHex(colorR);
 
-    //   this.color = '#aa0';
+    //   this.color = '#' + colorR + 'aa00';
     // }
+  }
+
+  toHex(number) {
+    var hex = Number(number).toString(16);
+    if (hex.length <= 1) hex = '0' + hex;
+
+    return hex;
   }
 }
