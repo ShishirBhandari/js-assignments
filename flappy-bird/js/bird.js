@@ -45,11 +45,11 @@ class Bird {
       this.speed = -4;
       g = 0;
 
-      var jumpPos = 40;
+      var jumpPos = 50;
 
       if (this.moveUpPosition <= -jumpPos) {
         this.moveUpPosition = 0;
-        this.speed = 1;
+        this.speed = 2;
         this.moveUpFlag = -1;
       }
     }

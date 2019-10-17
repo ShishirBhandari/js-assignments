@@ -13,3 +13,8 @@ p {
   text-align: center;
   color: white;
 }
+
+canvas {
+  margin: 5px;
+  background-color: darkslategrey;
+}

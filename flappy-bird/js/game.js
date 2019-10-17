@@ -1,10 +1,13 @@
 class Game {
-  constructor(parentElem) {
+  constructor(parentElem, controlKey) {
     this.parentElem = parentElem;
+    this.controlKey = controlKey;
+
     this.gameWidth = 288;
     this.gameHeight = 512;
 
     this.canvas = document.createElement('canvas');
+    this.canvas.setAttribute('id', 'canvas-with-' + controlKey);
     this.context = this.canvas.getContext('2d');
 
     this.gravity = 9.81;
@@ -31,7 +34,6 @@ class Game {
     this.canvas.setAttribute('height', this.gameHeight);
 
     this.parentElem.appendChild(this.canvas);
-    console.log(this.canvas);
   }
 
   createComponents() {
@@ -41,17 +43,34 @@ class Game {
 
     this.obstacles = new Obstacle(this.context);
     this.gameOver = new GameOver(this.context);
+    this.mainMenu = new MainMenu(this.context);
   }
 
   checkInputs() {
+    this.canvas.onclick = function(event) {
+      event.preventDefault();
+      if (this.state == 'MainMenu') {
+        this.state = 'Playing';
+        this.bird.moveUp();
+      } else if (this.state == 'Playing') {
+        this.isSpacePressed = true;
+      }
+      if (this.state == 'GameOver') {
+        this.state = 'MainMenu';
+        this.reset();
+      }
+    }.bind(this);
+
     document.onkeydown = function(event) {
       var pressedKey = event.key;
 
-      if (pressedKey == ' ') {
+      if (pressedKey == this.controlKey) {
         event.preventDefault();
 
-        if (this.state == 'MainMenu') this.state = 'Playing';
-        else if (this.state == 'Playing') {
+        if (this.state == 'MainMenu') {
+          this.state = 'Playing';
+          this.bird.moveUp();
+        } else if (this.state == 'Playing') {
           this.isSpacePressed = true;
         }
         if (this.state == 'GameOver') {
@@ -78,6 +97,7 @@ class Game {
         this.bird.oscillate();
         this.bird.draw();
 
+        this.mainMenu.show(this.gameWidth);
         this.showScore();
 
         break;
@@ -112,11 +132,14 @@ class Game {
 
         this.foreground.draw(this.gameWidth, this.gameHeight);
 
-        this.bird.useGravity(this.gravity);
         this.bird.draw();
 
+        if (!this.foreground.detectCollision(this.bird, this.gameHeight)) {
+          this.bird.useGravity(this.gravity);
+        }
+
         this.showScore();
-        this.gameOver.showHighScore(this.gameWidth);
+        this.gameOver.show(this.gameWidth);
 
         break;
     }
@@ -152,21 +175,4 @@ class Game {
   }
 }
 
-// main class
-class main {
-  constructor() {
-    this.element = document.getElementsByClassName('main-wrapper')[0];
 
-    this.gameInstances = [];
-    this.createGames(1);
-  }
-
-  createGames(numberOfGames) {
-    for (let i = 0; i < numberOfGames; i++) {
-      var game = new Game(this.element);
-      this.gameInstances.push(game);
-    }
-  }
-}
-
-main = new main();

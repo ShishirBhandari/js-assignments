@@ -4,6 +4,9 @@ class GameOver {
     this.highScore = localStorage.getItem('flappy_bird_high_score')
       ? localStorage.getItem('flappy_bird_high_score')
       : 0;
+
+    this.gameOverImage = new Image();
+    this.gameOverImage.src = './images/game-over.png';
   }
 
   setHighScore(score) {
@@ -13,13 +16,23 @@ class GameOver {
     }
   }
 
+  show(gameWidth) {
+    this.context.drawImage(
+      this.gameOverImage,
+      gameWidth / 2 - this.gameOverImage.width / 2,
+      125
+    );
+
+    this.showHighScore(gameWidth);
+  }
+
   showHighScore(gameWidth) {
     var scoreFontSize = 20;
     this.context.font = scoreFontSize + 'px Arial';
     this.context.fillStyle = '#fff';
     this.context.fillText(
-      'High Score: ' + this.highScore,
-      gameWidth / 2 - (scoreFontSize * 7) / 2,
+      'Best:\n' + this.highScore,
+      gameWidth / 2 - (scoreFontSize * 5) / 2,
       100
     );
   }
