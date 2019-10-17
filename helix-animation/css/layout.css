@@ -1,0 +1,16 @@
+body {
+  background-color: darkslategrey;
+  text-align: center;
+}
+
+canvas {
+  background-color: black;
+  display: inline-block;
+}
+
+p {
+  color: white;
+  font-size: 28px;
+  margin: 5px;
+  font-weight: bold;
+}
