@@ -21,9 +21,11 @@ class Helix {
 
   createCircles() {
     var currentYPos = this.initialYPos;
+    var currentColor = 150;
 
     for (let i = 0; i < this.rows; i++) {
       currentYPos += this.gap;
+      currentColor += 10;
 
       var currentX = 0;
       var phaseIncrease = 6;
@@ -36,17 +38,19 @@ class Helix {
         circle.currentX = currentPhase += phaseIncrease;
         circle.currentY = currentYPos;
 
-        circle.color = '#00f';
+        circle.color = '#' + circle.toHex(currentColor) + '00ff';
 
         this.circles.push(circle);
         console.log(circle.posY);
       }
     }
 
-    var currentYPos = this.initialYPos;
+    currentYPos = this.initialYPos;
+    currentColor = 150;
 
     for (let i = 0; i < this.rows; i++) {
       currentYPos += this.gap;
+      currentColor += 10;
 
       var phaseIncrease = 6;
       var currentPhase = 0;
@@ -59,7 +63,7 @@ class Helix {
         circle.currentX = currentPhase += phaseIncrease;
         circle.currentY = currentYPos;
 
-        circle.color = '#0ff';
+        circle.color = '#' + circle.toHex(currentColor) + '00ff';
 
         this.circles.push(circle);
         console.log(circle.posY);
